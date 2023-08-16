@@ -1,4 +1,3 @@
-
 import os
 import logging
 from flask import Flask, render_template, request, send_from_directory, jsonify
@@ -21,24 +20,25 @@ os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 def index():
     if request.method == 'POST':
         try:
-            file = request.files.get('file')
-            if not file or not file.filename.endswith('.pdf'):
+            files = request.files.getlist('file')
+            if not files or not all(f.filename.endswith('.pdf') for f in files):
                 logger.error('Invalid file type uploaded.')
                 return jsonify({"error": "Invalid file type. Please upload a PDF."}), 400
-            
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            
-            images = pdf2image.convert_from_path(filepath)
+
             output_filepaths = []
-            for i, image in enumerate(images):
-                out_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{filename}_page_{i}.jpg")
-                image.save(out_path, 'JPEG')
-                output_filepaths.append(out_path)
-            
-            return jsonify({"files": [f.split('/')[-1] for f in output_filepaths]})
-        
+            for file in files:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+
+                images = pdf2image.convert_from_path(filepath)
+                for i, image in enumerate(images):
+                    out_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{filename}_page_{i}.jpg")
+                    image.save(out_path, 'JPEG')
+                    output_filepaths.append(out_path)
+
+            return jsonify({"files": [os.path.split(f)[-1] for f in output_filepaths]})
+
         except Exception as e:
             logger.error(f"Error processing file: {str(e)}")
             return jsonify({"error": "Error processing file. Please try again later."}), 500
