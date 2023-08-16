@@ -6,7 +6,7 @@ USER root
 
 COPY requirements.txt .
 
-RUN apk add --no-cache zlib-dev
+RUN apk add --no-cache zlib-dev jpeg-dev build-base
 
 RUN pip install --no-cache-dir -r requirements.txt
 
