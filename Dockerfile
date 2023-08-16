@@ -7,6 +7,8 @@ USER appuser
 
 COPY requirements.txt .
 
+RUN apk add --no-cache zlib-dev
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
