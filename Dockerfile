@@ -2,14 +2,16 @@ FROM python:3.9-alpine
 
 WORKDIR /app
 
-RUN adduser -D appuser
-USER appuser
+USER root
 
 COPY requirements.txt .
 
 RUN apk add --no-cache zlib-dev
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN adduser -D appuser
+USER appuser
 
 COPY app.py .
 COPY templates/ templates/
