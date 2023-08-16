@@ -1,11 +1,17 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
 WORKDIR /app
 
-COPY app.py .
-COPY templates/ templates/
+RUN adduser -D appuser
+USER appuser
+
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "app.py"]
+COPY app.py .
+COPY templates/ templates/
+
+EXPOSE 5000
+
+ENTRYPOINT ["python", "app.py"]
