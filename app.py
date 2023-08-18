@@ -33,7 +33,7 @@ def index():
 
                 images = pdf2image.convert_from_path(filepath)
                 for i, image in enumerate(images):
-                    out_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{filename}_page_{i}.jpg")
+                    out_path = os.path.join(app.config['OUTPUT_FOLDER'], f"{filename}_page_{i + 1}.jpg")
                     image.save(out_path, 'JPEG')
                     output_filepaths.append(out_path)
 
